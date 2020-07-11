@@ -1,14 +1,14 @@
 @php
     $menus = [
-        ['type' => 'item', 'text' => 'Dashboard', 'link' => url('admin.home'), 'icon' => 'fa-tachometer-alt'],
+        ['type' => 'item', 'text' => 'Dashboard', 'link' => route('admin.home'), 'icon' => 'fa-tachometer-alt'],
 
         ['type' => 'header', 'text' => 'Account'],
         ['type' => 'item', 'text' => 'Customers', 'link' => url('admin.user.index'), 'icon' => 'fa-user-friends'],
         ['type' => 'item', 'text' => 'Users', 'link' => url('admin.user.index'), 'icon' => 'fa-user-secret'],
 
         ['type' => 'header', 'text' => 'Product'],
-        ['type' => 'item', 'text' => 'Category', 'link' => url('admin.user.index'), 'icon' => 'fa-tag'],
-        ['type' => 'item', 'text' => 'Products', 'link' => url('admin.user.index'), 'icon' => 'fa-box'],
+        ['type' => 'item', 'text' => 'Category', 'link' => route('admin.category.index'), 'icon' => 'fa-tag'],
+        ['type' => 'item', 'text' => 'Products', 'link' => route('admin.product.index'), 'icon' => 'fa-box'],
 
         ['type' => 'header', 'text' => 'Payment'],
         ['type' => 'item', 'text' => 'Transaction', 'link' => url('admin.user.index'), 'icon' => 'fa-stream'],

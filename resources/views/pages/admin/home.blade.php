@@ -5,8 +5,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="alert alert-primary">
-                    {{-- Welcome Back, <b>{{ auth()->user()->name }}</b>
-                    as a <b>{{ ucfirst(auth()->user()->role) }}</b> ! --}}
+                    Welcome Back, <b>{{ auth()->user()->name }}</b>!
                 </div>
             </div>
         </div>
