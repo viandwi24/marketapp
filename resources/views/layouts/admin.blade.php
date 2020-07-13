@@ -60,6 +60,8 @@
         </div>
     </div>
     <!-- javascript -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=Promise.prototype.finally" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.10.2/underscore.min.js"></script>
     <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
     <script>$.widget.bridge('uibutton', $.ui.button)</script>
@@ -75,8 +77,9 @@
     <script src="{{ asset('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/vue/vue.js') }}"></script>
     <script src="{{ asset('assets/dist/js/adminlte.js') }}"></script>
+    <script src="{{ asset('assets/plugins/axios/axios.min.js') }}"></script>
     @stack('js-lib')
-    @stack('js')
     @include('components.admin-javascript')
+    @stack('js')
 </body>
 </html>

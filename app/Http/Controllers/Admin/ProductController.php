@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\Select2;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
@@ -14,12 +16,13 @@ class ProductController extends Controller
     {
         if ($request->ajax())
         {
-            $categories = Product::query();
+            $categories = Product::with('category');
             return DataTables::of($categories)
                 ->make();
         }
 
-        return view('pages.admin.product');
+        $categories = (new Select2((Category::all()), ['name']));
+        return view('pages.admin.product', compact('categories'));
     }
 
     public function store(Request $request)
@@ -27,10 +30,16 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',
-            'price' => 'required|numeric'
+            'price' => 'required|numeric',
+            'category' => 'required|array'
         ]);
 
-        $store = Product::create($request->only('name', 'description', 'price'));
+        $categories = Category::whereIn('id', $request->category)->get();
+        $store = null;
+        DB::transaction(function () use ($request, $categories, &$store) {
+            $store = Product::create($request->only('name', 'description', 'price'));
+            $store->category()->sync($categories->pluck('id'));
+        });
 
         return response([
             'status' => 'success',
@@ -44,15 +53,20 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',
-            'price' => 'required|numeric'
+            'price' => 'required|numeric',
+            'category' => 'required|array'
         ]);
 
-        $update = $product->update($request->only('name', 'description', 'price'));
+        $categories = Category::whereIn('id', $request->category)->get();
+        DB::transaction(function () use ($request, $categories, &$product) {
+            $product->update($request->only('name', 'description', 'price'));
+            $product->category()->sync($categories->pluck('id'));
+        });
 
         return response([
             'status' => 'success',
             'message' => 'Update Product ' . $request->name . ' Success.',
-            'data' => $update
+            'data' => $product
         ]);
     }
 

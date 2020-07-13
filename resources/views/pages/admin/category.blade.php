@@ -181,6 +181,4 @@
     <script src="{{ asset('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/axios/axios.min.js') }}"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=Promise.prototype.finally" defer></script>
 @endpush

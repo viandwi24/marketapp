@@ -28,6 +28,7 @@
                             <thead>
                                 <th width="6%">#</th>
                                 <th>Name</th>
+                                <th>Category</th>
                                 <th>Description</th>
                                 <th>Price</th>
                                 <th class="text-center" width="10%">...</th>
@@ -71,6 +72,10 @@
                                 <input :disabled="modalLoading" type="number" min="1" name="price" class="form-control" v-model="product.price">
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select class="select2 form-control" id="selectCategory" multiple></select>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -93,6 +98,7 @@
         const vm = new Vue({
             el: '#app',
             data: {
+                categories: @JSON($categories->array()),
                 table: null,
                 product: { name: '', description: '', price: 0 },
                 modalMode: 'create',
@@ -116,7 +122,9 @@
                 },
                 openModalUpdate(id) {
                     this.product = this.getData(id);
+                    let category = _.pluck(this.product.category, 'id')
                     this.modalMode = "update";
+                    $('#selectCategory').val(category).trigger('change').trigger('click');
                     $('.modal#modal').modal('show');
                 },
                 openModalDelete(id, name) {
@@ -126,6 +134,7 @@
                 // crud ajax
                 create() {
                     let data = { ...this.product };
+                    data.category = $('#selectCategory').val();
                     this.modalLoading = true;
                     http.post("/admin/product", data).then((res) => {
                         this.tableReload();
@@ -136,6 +145,7 @@
                 },
                 update() {
                     let data = { ...this.product };
+                    data.category = $('#selectCategory').val();
                     this.modalLoading = true;
                     http.put(`/admin/product/${data.id}`, data).then((res) => {
                         this.tableReload();
@@ -151,6 +161,7 @@
                 },
             },
             mounted() {
+                $('#selectCategory').select2({ data: this.categories });
                 this.table = $('#table').DataTable({
                     ajax: "{{ route('admin.product.index') }}",
                     processing: true,
@@ -160,6 +171,7 @@
                     columns: [
                         { render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1 },
                         { data: 'name' },
+                        { data: 'category', render: data => (_.pluck(data, 'name')).join(", ") },
                         { data: 'description' },
                         { data: 'price' },
                         { 
@@ -183,15 +195,16 @@
 @endpush
 
 @push('css-lib')
+    <link rel="stylesheet" href="{{ asset('assets/plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
 @endpush
 
 @push('js-lib')
+    <script src="{{ asset('assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/axios/axios.min.js') }}"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=Promise.prototype.finally" defer></script>
 @endpush

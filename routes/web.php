@@ -39,3 +39,6 @@ Route::group([
         Route::post('/logout', 'AuthController@logout')->name('logout')->middleware('auth:admin');
     });
 });
+
+
+Route::get('/', 'HomeController@index')->name('home');
