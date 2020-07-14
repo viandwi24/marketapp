@@ -12,4 +12,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Category::class, 'products_categories');
     }
+
+    public function image()
+    {
+        return $this->belongsTo(ProductImage::class, 'products_images');
+    }
 }

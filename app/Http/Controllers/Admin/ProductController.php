@@ -27,6 +27,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        return $request->file('image');
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',

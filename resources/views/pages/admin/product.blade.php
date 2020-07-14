@@ -41,7 +41,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" style="position: absolute;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -55,6 +55,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="form">
+                        <div class="form-group">
+                            <label>Image</label>
+                            <div @click="selectImage" id="image-preview"></div>
+                            <input type="file" name="image" id="image" style="display: none;">
+                        </div>
                         <div class="form-group">
                             <label>Name</label>
                             <input :disabled="modalLoading" placeholder="Name..." type="text" class="form-control" v-model="product.name">
@@ -115,6 +120,18 @@
                     return result;
                 },
 
+                // all
+                selectImage() {
+                    $('input#image').trigger('click');
+                },
+                parseToFormData(datas) {
+                    let formdata = new FormData();
+                    for(let i in datas) {
+                        formdata.append(i, datas[i]);
+                    }
+                    return formdata;
+                },
+
                 // modal
                 openModalCreate() {
                     this.modalMode = "create";
@@ -133,10 +150,24 @@
 
                 // crud ajax
                 create() {
-                    let data = { ...this.product };
-                    data.category = $('#selectCategory').val();
+                    let formdata;
+                    let data = {
+                        ...this.product,
+                        image: $('#image')[0].files[0],
+                        category: $('#selectCategory').val(),
+                    };
+                    formdata = this.parseToFormData(data);
+                    // return console.log(formdata);
                     this.modalLoading = true;
-                    http.post("/admin/product", data).then((res) => {
+                    http({            
+                        method: "POST",
+                        url: "/admin/product", 
+                        data: formdata,
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then((res) => {
+                        console.log(res);
                         this.tableReload();
                     }).finally(() => {
                         $('.modal#modal').modal('hide');
@@ -161,6 +192,20 @@
                 },
             },
             mounted() {
+                // 
+                $('#image').on('change', function (e) {
+                    if (e.target.files && e.target.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            let preview = $('#image-preview');
+                            preview.html('');
+                            preview.append(`<img src="${e.target.result}" />`);
+                        }
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                });
+
+                // 
                 $('#selectCategory').select2({ data: this.categories });
                 this.table = $('#table').DataTable({
                     ajax: "{{ route('admin.product.index') }}",
@@ -192,6 +237,26 @@
             }
         });
     </script>    
+@endpush
+
+@push('css')
+    <style>
+        #image-preview {
+            min-width: 100px;
+            min-height: 100px;
+            border: 1px dashed black;
+            position: relative;
+            cursor: pointer;
+        }
+        #image-preview::after {
+            position: absolute;
+            content: "Click for select image";
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #image-preview img { max-width: 100%; }
+    </style>
 @endpush
 
 @push('css-lib')
