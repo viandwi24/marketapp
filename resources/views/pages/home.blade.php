@@ -5,21 +5,21 @@
 @section('content')
     <div class="container" style="padding-top: 5rem;">
         <div class="row">
-            @for ($i = 0; $i < 4; $i++)
+            @foreach ($products as $product)
                 <div class="col-lg-3 mb-4">
                     <div class="card">
-                        <img src="https://images.unsplash.com/photo-1477862096227-3a1bb3b08330?ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60" alt="" class="card-img-top">
+                        <img src="{{ url('images/products/' . $product->image->filename) }}" alt="" class="card-img-top">
                         <div class="card-body">
-                            <h5 class="card-title">Sunset</h5>
+                            <h5 class="card-title">{{ $product->name }}</h5>
                             <p class="card-text">
-                                {{ \Str::random(100) }}
+                                {{ $product->description }}
                             </p>
                             <a href="" class="btn btn-outline-success btn-sm">Read More</a>
-                            <a href="" class="btn btn-outline-danger btn-sm"><i class="far fa-heart"></i></a>
+                            <a href="" class="btn btn-outline-primary btn-sm"><i class="fa fa-cart-plus"></i></a>
                         </div>
                     </div>
-                </div>            
-            @endfor
+                </div>                
+            @endforeach
         </div>
     </div>
 @endsection

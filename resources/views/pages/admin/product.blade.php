@@ -66,7 +66,8 @@
                         </div>
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea :disabled="modalLoading" placeholder="Description..." class="form-control" v-model="product.description"></textarea>
+                            <div id="description"></div>
+                            {{-- <textarea :disabled="modalLoading" placeholder="Description..." class="form-control" v-model="product.description"></textarea> --}}
                         </div>
                         <div class="form-group">
                             <label>Price</label>
@@ -127,22 +128,43 @@
                 parseToFormData(datas) {
                     let formdata = new FormData();
                     for(let i in datas) {
-                        formdata.append(i, datas[i]);
+                        let data = datas[i];
+                        if (data instanceof File) {
+                        } else if (typeof data == "object") {
+                            data = JSON.stringify(data);                            
+                        }
+                        formdata.append(i, data);
                     }
                     return formdata;
                 },
 
                 // modal
+                reinitSummernote() {
+                    $('#description').summernote('destroy');
+                    $('#description').summernote({
+                        toolbar: [
+                            ['style', ['bold', 'italic', 'underline', 'clear']],
+                            ['font', ['strikethrough', 'superscript', 'subscript']],
+                            ['color', ['color']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                        ]
+                    });
+                },
                 openModalCreate() {
                     this.modalMode = "create";
                     $('.modal#modal').modal('show');
+                    this.reinitSummernote();
                 },
                 openModalUpdate(id) {
+                    let image_baseurl = "{{ url('/images/products') }}/";
                     this.product = this.getData(id);
                     let category = _.pluck(this.product.category, 'id')
                     this.modalMode = "update";
                     $('#selectCategory').val(category).trigger('change').trigger('click');
+                    $('#image-preview').html('').append(`<img src="${image_baseurl+this.product.image.filename}" />`);
                     $('.modal#modal').modal('show');
+                    this.reinitSummernote();
+                    $('#description').summernote('code', this.product.description);
                 },
                 openModalDelete(id, name) {
                     if (confirm(`Delete product ${name}`)) this.delete(id);
@@ -156,6 +178,7 @@
                         image: $('#image')[0].files[0],
                         category: $('#selectCategory').val(),
                     };
+                    data.description = $('#description').summernote('code');
                     formdata = this.parseToFormData(data);
                     // return console.log(formdata);
                     this.modalLoading = true;
@@ -175,8 +198,11 @@
                     });
                 },
                 update() {
-                    let data = { ...this.product };
-                    data.category = $('#selectCategory').val();
+                    let data = {
+                        ...this.product,
+                        description: $('#description').summernote('code'),
+                        category: $('#selectCategory').val(),
+                    };
                     this.modalLoading = true;
                     http.put(`/admin/product/${data.id}`, data).then((res) => {
                         this.tableReload();
@@ -204,6 +230,9 @@
                         reader.readAsDataURL(e.target.files[0]);
                     }
                 });
+
+                // 
+                $('#description').summernote();
 
                 // 
                 $('#selectCategory').select2({ data: this.categories });
@@ -264,6 +293,7 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.css') }}">
 @endpush
 
 @push('js-lib')
@@ -272,4 +302,5 @@
     <script src="{{ asset('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
 @endpush

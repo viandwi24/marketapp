@@ -2,8 +2,8 @@
 <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}"></script>
 <script>
     var Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 4000 });
-    $(window).ready(function(){
-    checklaststatepushmenu();
+        $(window).ready(function(){
+        checklaststatepushmenu();
     });
     
     function togglepushmenu() {
